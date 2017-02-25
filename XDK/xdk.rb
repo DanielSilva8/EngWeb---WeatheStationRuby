@@ -15,15 +15,17 @@ class XDK
   end
 
   def registerObserver(hostname, port)
-    @observers += [hostname, port]
+    @observers += [[hostname, port]]
   end
 
-  def removeObserver(port)
-    @observers -= [port]
+  def removeObserver(hostname, port)
+    @observers -= [[hostname, port]]
   end
 
   def notifyObservers()
-    @observers.each { |x| send('localhost', x) }
+    @observers.each { |x| send(x[1], x[0]) }
+      #puts "Host: " + x[1].to_s + " Port: " + x[0].to_s + " Temp: " + @temperature.to_s + " Aco: " + @acoustic.to_s }
+
   end
 
   def send(hostname,port)
@@ -36,13 +38,13 @@ class XDK
   end
 
   def run
-    Thread.new{
+    #Thread.new{
       while @state do
         sleep(@NotifyFrequency)
         update
         notifyObservers
       end
-    }
+    #}
   end
 
   def update
@@ -63,3 +65,7 @@ class XDK
      @state = false
   end
 end
+
+#myXDK = XDK.new(1, 'XDK1','localhost', 2000, 5)
+#myXDK.registerObserver('191.1.1.2', 3000)
+#myXDK.start()
