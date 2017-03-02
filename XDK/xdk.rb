@@ -1,7 +1,6 @@
 require 'socket'
 
 class XDK
-
   attr_reader :id, :name, :hostname, :port, :nf
   def initialize(id, name, hostname ,port, nf)
     @id=id
@@ -9,63 +8,91 @@ class XDK
     @observers=[[hostname, port]]
     @temperature=0
     @acoustic=0
-    @NotifyFrequency=nf
+    @notifyfrequency=nf
     @state = true
-
+    @mysocket = []
   end
 
-  def registerObserver(hostname, port)
+  def registerobserver(hostname, port)
     @observers += [[hostname, port]]
+    connect
   end
 
-  def removeObserver(hostname, port)
-    @observers -= [[hostname, port]]
-  end
-
-  def notifyObservers()
-    @observers.each { |x| send(x[1], x[0]) }
-      #puts "Host: " + x[1].to_s + " Port: " + x[0].to_s + " Temp: " + @temperature.to_s + " Aco: " + @acoustic.to_s }
-
-  end
-
-  def send(hostname,port)
-    s = TCPSocket.open(hostname, port)
-
-    while line = s.gets   # Read lines from the socket
-      puts line.chop      # And print with platform line terminator
+  def removeobserver(hostname, port)
+    i=0
+    @observers.each { |x|
+    if x[0] == hostname and x[1]==port
+      break
     end
-    s.close               # Close the socket when done
+      i += 1
+    }
+    @observers -= [[hostname, port]]
+    @mysocket -= [@mysocket[i]]
+    connect
+  end
+
+  def notifyobservers
+    array = [@id, @temperature, @acoustic, Time.now.ctime]
+    aux = Marshal.dump(array)
+    @mysocket.each { |x| send(x, aux)}
+  end
+
+  def connect
+    @mysocket.each{ |s| s.close}
+    @mysocket = []
+    puts 'Connecting to Server'
+    i=0
+    @observers.each { |x|
+      begin
+        @mysocket[i] = TCPSocket.new(x[0], x[1].to_s)
+        i+=1
+     # rescue
+      #  puts "Connection failed on Host: " + x[0].to_s + " Port: " + x[1].to_s
+      end
+    }
+    return true if i > 0
+    return false
+  end
+
+  def send(socket,data)
+    socket.flush
+    socket.puts(data)
+  end
+
+  def disconnect
+    puts 'closing active connections'
+    @mysocket.each{ |s| s.close}
+    @mysocket = []
+    puts 'done'
   end
 
   def run
-    #Thread.new{
+    puts 'Sending data'
+    Thread.new{
       while @state do
-        sleep(@NotifyFrequency)
         update
-        notifyObservers
+        notifyobservers
+        sleep(@notifyfrequency)
       end
-    #}
+    }
   end
 
   def update
     if @temperature == 0
         @temperature = rand(7.0...32.9)
     else
-        @temperature +=  rand() - rand()
+        @temperature +=  rand - rand
     end
     @acoustic = rand(20.0...119.9)
   end
 
   def start
     @state = true
-    run
+    run if connect
   end
 
   def stop
-     @state = false
+    @state = false
+    disconnect
   end
 end
-
-#myXDK = XDK.new(1, 'XDK1','localhost', 2000, 5)
-#myXDK.registerObserver('191.1.1.2', 3000)
-#myXDK.start()
