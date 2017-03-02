@@ -7,7 +7,6 @@ class Server
     loop {                          # Servers run forever
       Thread.start(server.accept) do |client|
         @clients << client
-        client.i
         while line = client.gets # Read lines from socket
           aux = Marshal.load(line)        # and print them
           puts "Client: " + aux[0].to_s + " Temp: " + aux[1].to_s + " Aco: " + aux[2].to_s
@@ -18,5 +17,6 @@ class Server
       end
     }
   end
-
 end
+
+s = Server.new

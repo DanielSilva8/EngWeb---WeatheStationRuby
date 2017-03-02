@@ -15,7 +15,11 @@ class XDK
 
   def registerobserver(hostname, port)
     @observers += [[hostname, port]]
-    connect
+    begin
+      @mysocket += [TCPSocket.new(hostname, port)]
+    rescue
+        puts "Connection failed on Host: " + x[0].to_s + " Port: " + x[1].to_s
+    end
   end
 
   def removeobserver(hostname, port)
@@ -27,8 +31,9 @@ class XDK
       i += 1
     }
     @observers -= [[hostname, port]]
+    @mysocket[i].close
     @mysocket -= [@mysocket[i]]
-    connect
+
   end
 
   def notifyobservers
@@ -44,10 +49,10 @@ class XDK
     i=0
     @observers.each { |x|
       begin
-        @mysocket[i] = TCPSocket.new(x[0], x[1].to_s)
+        @mysocket[i] = TCPSocket.new( x[0].to_s, x[1])
         i+=1
-     # rescue
-      #  puts "Connection failed on Host: " + x[0].to_s + " Port: " + x[1].to_s
+      rescue
+        puts "Connection failed on Host: " + x[0].to_s + " Port: " + x[1].to_s
       end
     }
     return true if i > 0
@@ -60,10 +65,10 @@ class XDK
   end
 
   def disconnect
-    puts 'closing active connections'
+    puts 'Closing active connections'
     @mysocket.each{ |s| s.close}
     @mysocket = []
-    puts 'done'
+    puts 'Done'
   end
 
   def run
@@ -88,7 +93,11 @@ class XDK
 
   def start
     @state = true
-    run if connect
+    if connect
+      run
+    else
+      puts 'No active connections'
+    end
   end
 
   def stop
@@ -96,3 +105,11 @@ class XDK
     disconnect
   end
 end
+
+myX = XDK.new(1,'k','localhost',2000, 5)
+myX.registerobserver('localhost', 3000)
+myX.start
+sleep(15)
+
+sleep(15)
+myX.stop
