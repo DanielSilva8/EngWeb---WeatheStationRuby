@@ -3,7 +3,7 @@ require 'socket'
 class XDK
   attr_reader :hostname, :port, :nfTemp, :nfAco
   def initialize(hostname ,port, nfTemp, nfAco)
-    @id=rand(6**8).to_s(36)
+    @id= rand(6**8).to_s(36)
     @observers=[[hostname, port]]
     @nfTemp=nfTemp
     @nfAco=nfAco
@@ -88,16 +88,16 @@ class XDK
   end
 
   def send(socket,data,id)
-        begin
-          socket.flush
-          socket.puts(data)
-        rescue
-          aux = @observers[id]
-          puts "Connection failed on Host: " + aux[0].to_s + " Port: " + aux[1].to_s
-          puts "Deleting Connection"
-          @mysocket -= [socket]
-          @observers -= [aux]
-        end
+    begin
+      socket.flush
+      socket.puts(data)
+    rescue
+      aux = @observers[id]
+      puts "Connection failed on Host: " + aux[0].to_s + " Port: " + aux[1].to_s
+      puts "Deleting Connection"
+      @mysocket -= [socket]
+      @observers -= [aux]
+    end
   end
 
   def run
@@ -108,11 +108,11 @@ class XDK
       t = 0
       while @state do
         if (Time.now - tinitial) >= a and (Time.now - tinitial) >= t
-          notifyobservers(getTemperature, getAcoustic, Time.now.to_s, getGPS[0], getGPS[1])
+          notifyobservers(getTemperature, getAcoustic, Time.now.ctime, getGPS[0], getGPS[1])
           a += @nfAco
           t += @nfTemp
         elsif (Time.now - tinitial) >= a
-          notifyobservers(nil, getAcoustic, Time.now.ctime, getGPS[0], getGPS[1])
+          notifyobservers('null', getAcoustic, Time.now.ctime, getGPS[0], getGPS[1])
           a += @nfAco
         end
       end
@@ -124,11 +124,10 @@ class XDK
   end
 
   def getAcoustic
-    return rand(80.0...119.9)
+    return rand(80.0...99.9)
   end
 
   def getGPS
-
-    return [rand(0.0...90.0), rand(0.0...180.0)]
+    return [rand(10.0...90.0), rand(10.0...180.0)]
   end
 end
