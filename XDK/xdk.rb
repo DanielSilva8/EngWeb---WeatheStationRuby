@@ -8,6 +8,7 @@ class XDK
     @nfTemp=nfTemp
     @nfAco=nfAco
     @state = true
+    @notify = []
     @mysocket = []
     puts 'XDK Created with ID: ' + @id
   end
@@ -31,7 +32,7 @@ class XDK
       @mysocket += [TCPSocket.new(hostname, port)]
       @observers += [[hostname, port]]
     rescue
-        puts "Connection failed on Host: " + hostname + " Port: " + port.to_s
+      puts "Connection failed on Host: " + hostname + " Port: " + port.to_s
     end
     puts "Host: " + hostname + " Port: " + port.to_s + "Registered"
   end
@@ -39,9 +40,9 @@ class XDK
   def removeobserver(hostname, port)
     i=0
     @observers.each { |x|
-    if x[0] == hostname and x[1]==port
-      break
-    end
+      if x[0] == hostname and x[1]==port
+        break
+      end
       i += 1
     }
     @observers -= [[hostname, port]]
@@ -107,16 +108,32 @@ class XDK
       a = 0
       t = 0
       while @state do
-        if (Time.now - tinitial) >= a and (Time.now - tinitial) >= t
-          notifyobservers(getTemperature, getAcoustic, Time.now.ctime, getGPS[0], getGPS[1])
-          a += @nfAco
-          t += @nfTemp
-        elsif (Time.now - tinitial) >= a
-          notifyobservers('null', getAcoustic, Time.now.ctime, getGPS[0], getGPS[1])
-          a += @nfAco
+        sleep(0.5)
+        (temp,t) = notify?(tinitial,t, 1) if !@notify[0]
+        (aco,a) = notify?(tinitial,a, 2) if !@notify[1]
+        if @notify.include?(true)
+          notifyobservers(temp ,aco ,Time.now.ctime, getGPS[0], getGPS[1])
+          @notify = [false, false]
         end
       end
     }
+  end
+
+  def notify?(tinitial, a, type)
+    if (Time.now - tinitial) >= a
+      case type
+        when 1
+          a += @nfTemp
+          @notify[0] = true
+          return [getTemperature,a ]
+        when 2
+          @notify[1] = true
+          a += @nfAco
+          return [getAcoustic, a ]
+      end
+    else
+      return ['null', a]
+    end
   end
 
   def getTemperature

@@ -21,17 +21,17 @@ class Server
 
   def stop
     @state = false
-    puts 'Server stoped'
     disconnect
   end
 
   def connect
     i=0
     begin
-    @server = TCPServer.open(@port)
-    i = 1
-    @db = SQLite3::Database.open "engweb.db"
-    createdb
+      @server = TCPServer.open(@port)
+      i = 1
+      @db = SQLite3::Database.open "engweb.db"
+      createdb
+      @db.execute "UPDATE XDK SET STATE = 0"
     rescue
       puts "Can't connect on Port: " + @port.to_s if i ==0
       puts "Can't connect to the Database: " if i ==1
@@ -46,9 +46,10 @@ class Server
       @db.execute "UPDATE XDK SET STATE = 0"
       @db.close
     rescue
-      puts "Can't disconnect clients from server" + @port.to_s if i ==0
-      puts "Can't disconnect from the Database: " if i ==1
+      puts "Can't disconnect clients from server " + @port.to_s if i == 0
+      puts "Can't disconnect from the Database: " if i == 1
     end
+    puts 'Server stopped'
   end
 
   def run
@@ -58,8 +59,10 @@ class Server
           id = client.gets.chomp
           puts 'Client ID: ' + id + ' Connected to this server'
 
-          if !@clients.include?(id.to_s)
-            @clients << id
+          inc = @db.execute "SELECT * FROM XDK WHERE ID = '#{id}' "
+
+          @clients << client
+          if inc.empty?
             registerclient(id)
           end
           @db.execute "UPDATE XDK SET STATE = 1 WHERE ID = '#{id}' "
@@ -72,6 +75,7 @@ class Server
           puts 'Client ID: ' + id + ' Disconnected from this server'
           puts 'Client ID: ' + id + ' Made ' + c.to_s + ' reads in the last session'
           @db.execute "UPDATE XDK SET STATE = 0 WHERE ID = '#{id}'"
+          @clients.delete(id)
         end
       end
     }
@@ -115,8 +119,8 @@ class Server
     puts 'CLIENT       LATITUDE    LONGITUDE'
     puts '------------------------------------'
     if array.empty?
-    puts "There is no clients connected to"
-    puts "this server"
+      puts "There is no clients connected to"
+      puts "this server"
     else
       array.each{ |x|
         gps = @db.execute "SELECT LATITUDE, LONGITUDE FROM XDK_DATA WHERE ID =(SELECT MAX(ID) FROM XDK_DATA WHERE XDK_ID LIKE '%#{x[0]}%')"
