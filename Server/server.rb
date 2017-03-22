@@ -2,14 +2,14 @@ require 'socket'                # Get sockets from stdlib
 require 'sqlite3'
 
 class Server
-  attr_reader :port
-  def initialize(port)
-    @id = rand(6**8).to_s(36)
+  attr_reader :port, :id
+  def initialize(port, id = rand(6**8).to_s(36))
+    @id = id
     @port = port
     @state = true
     @clients = []
     @server
-    puts 'Server Created with ID: ' + @id
+    puts 'Server Created'
   end
 
   def start
@@ -29,9 +29,10 @@ class Server
     begin
       @server = TCPServer.open(@port)
       i = 1
-      @db = SQLite3::Database.open "engweb.db"
+      @db = SQLite3::Database.open "#{@id}.db"
       createdb
       @db.execute "UPDATE XDK SET STATE = 0"
+
     rescue
       puts "Can't connect on Port: " + @port.to_s if i ==0
       puts "Can't connect to the Database: " if i ==1
@@ -40,15 +41,12 @@ class Server
 
   def disconnect
     i=0
-    begin
       @clients.each{ |c| c.close}
+      @server.close
       i = 1
       @db.execute "UPDATE XDK SET STATE = 0"
       @db.close
-    rescue
-      puts "Can't disconnect clients from server " + @port.to_s if i == 0
-      puts "Can't disconnect from the Database: " if i == 1
-    end
+
     puts 'Server stopped'
   end
 
@@ -58,6 +56,7 @@ class Server
         Thread.start(@server.accept) do |client|
           id = client.gets.chomp
           puts 'Client ID: ' + id + ' Connected to this server'
+
 
           inc = @db.execute "SELECT * FROM XDK WHERE ID = '#{id}' "
 
@@ -138,31 +137,80 @@ class Server
     puts '------------------------------------'
   end
 
-  def showreads(client)
-    array = @db.execute "SELECT * FROM XDK_DATA WHERE XDK_ID LIKE '%#{client}%' "
-    puts "Client: #{client}"
+  def showreads(client, sensor = nil)
+
+    if @db.execute( "SELECT * FROM XDK  WHERE ID LIKE '%#{client}%'").any?
+      if sensor == 'temperatura'
+        array = @db.execute "SELECT TIMESTAMP, TEMPERATURE FROM XDK_DATA WHERE XDK_ID LIKE '%#{client}%' AND TEMPERATURE IS NOT NULL "
+        issensor = true
+      elsif sensor == 'acustico'
+        array = @db.execute "SELECT TIMESTAMP, ACOUSTIC FROM XDK_DATA WHERE XDK_ID LIKE '%#{client}%' AND ACOUSTIC IS NOT NULL"
+        issensor = true
+      elsif sensor == 'gps'
+        array = @db.execute "SELECT TIMESTAMP, LATITUDE, LONGITUDE FROM XDK_DATA WHERE XDK_ID LIKE '%#{client}%' "
+        issensor = true
+      else
+        array = @db.execute "SELECT * FROM XDK_DATA WHERE XDK_ID LIKE '%#{client}%' "
+        issensor = false
+      end
+      puts "Client: #{client}"
+
+      if array.empty?
+        puts "There are no registers of the client #{client} in the database"
+      else
+        if !issensor
+          printall(array)
+        else
+          printsensor(array, sensor)
+        end
+      end
+    else
+      puts "There are no client #{client} registered in this server"
+    end
+
+
+  end
+
+  def printsensor(array, sensor)
+    if sensor == 'gps'
+      puts 'Timestamp:                  Latitude:    Longitude:'
+      puts '----------------------------------------------------'
+      array.each{|aux|
+        aux[1] = '%.6f' % aux[1]
+        aux[2] = '%.6f' % aux[2]
+        puts aux[0].to_s + '    ' + aux[1].to_s + '    ' + aux[2].to_s
+      }
+      puts '----------------------------------------------------'
+    else
+      puts "Timestamp:                  #{sensor.capitalize}:"
+      puts '----------------------------------------'
+      array.each{|aux|
+        aux[1] = '%.2f' % aux[1]
+        puts aux[0].to_s + '    ' + aux[1].to_s
+      }
+      puts '----------------------------------------'
+    end
+  end
+
+  def printall(array)
     puts "Timestamp:                  Temperature:    Acoustic:     Latitude:    Longitude: "
     puts '-----------------------------------------------------------------------------------'
-    if array.empty?
-      puts "There are no registers of the client #{client} in the database"
-    else
-      array.each{|aux|
-        if aux[3] == nil
-          aux[3] = '-----'
-        else
-          aux[3] = '%.2f' % aux[3]
-        end
-        if aux[4] == nil
-          aux[4] = '-----'
-        else
-          aux[4] = '%.2f' % aux[4]
-        end
-        aux[5] = '%.6f' % aux[5]
-        aux[6] = '%.6f' % aux[6]
+    array.each{|aux|
+      if aux[3] == nil
+        aux[3] = '-----'
+      else
+        aux[3] = '%.2f' % aux[3]
+      end
+      if aux[4] == nil
+        aux[4] = '-----'
+      else
+        aux[4] = '%.2f' % aux[4]
+      end
+      aux[5] = '%.6f' % aux[5]
+      aux[6] = '%.6f' % aux[6]
 
-        puts aux[2].to_s + "    " + aux[3].to_s  + "ºC         " + aux[4].to_s +  "         " + aux[5].to_s + "º   " + aux[6].to_s + "º"
-      }
-    end
+      puts aux[2].to_s + "    " + aux[3].to_s  + "ºC         " + aux[4].to_s +  "         " + aux[5].to_s + "º   " + aux[6].to_s + "º"
+    }
     puts '-----------------------------------------------------------------------------------'
   end
 end

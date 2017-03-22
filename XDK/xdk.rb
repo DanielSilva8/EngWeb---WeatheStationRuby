@@ -29,12 +29,14 @@ class XDK
 
   def registerobserver(hostname, port)
     begin
-      @mysocket += [TCPSocket.new(hostname, port)]
+      socket = TCPSocket.new(hostname, port)
+      send(socket, @id.to_s, -1)
+      @mysocket += [socket]
       @observers += [[hostname, port]]
     rescue
       puts "Connection failed on Host: " + hostname + " Port: " + port.to_s
     end
-    puts "Host: " + hostname + " Port: " + port.to_s + "Registered"
+    puts "Host: " + hostname + " Port: " + port.to_s + " Registered"
   end
 
   def removeobserver(hostname, port)
@@ -48,7 +50,7 @@ class XDK
     @observers -= [[hostname, port]]
     @mysocket[i].close
     @mysocket -= [@mysocket[i]]
-    puts "Host: " + hostname + " Port: " + port.to_s + "Removed"
+    puts "Host: " + hostname + " Port: " + port.to_s + " Removed"
   end
 
   def notifyobservers(temperature , acoustic, time, latitude, longitude)
@@ -65,7 +67,8 @@ class XDK
 
   def disconnect
     puts 'Closing active connections'
-    @mysocket.each{ |s| s.close}
+    @mysocket.each{ |s|
+      s.close }
     @mysocket = []
     @state = false
   end
@@ -148,3 +151,4 @@ class XDK
     return [rand(10.0...90.0), rand(10.0...180.0)]
   end
 end
+
