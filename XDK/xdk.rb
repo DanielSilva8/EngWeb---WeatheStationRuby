@@ -7,6 +7,8 @@ class XDK
     @observers=[[hostname, port]]
     @nfTemp=nfTemp
     @nfAco=nfAco
+    @timerA = 0
+    @timerT = 0
     @state = true
     @notify = []
     @mysocket = []
@@ -107,13 +109,13 @@ class XDK
   def run
     puts 'Sending data'
     Thread.new{
-      tinitial = Time.now
-      a = 0
-      t = 0
+      @tinitial = Time.now
+      @timerA = 0
+      @timerT = 0
       while @state do
         sleep(0.5)
-        (temp,t) = notify?(tinitial,t, 1) if !@notify[0]
-        (aco,a) = notify?(tinitial,a, 2) if !@notify[1]
+        (temp,@timerT) = notify?(@tinitial,@timerT, 1) if !@notify[0]
+        (aco,@timerA) = notify?(@tinitial,@timerA, 2) if !@notify[1]
         if @notify.include?(true)
           notifyobservers(temp ,aco ,Time.now.ctime, getGPS[0], getGPS[1])
           @notify = [false, false]
@@ -149,6 +151,21 @@ class XDK
 
   def getGPS
     return [rand(10.0...90.0), rand(10.0...180.0)]
+  end
+  def changenotifyfrequency(param1, param2)
+    if param2.is_a? Integer
+      @nfTemp = param1
+      @nfAco = param2
+
+    elsif param2 == 'temperatura'
+      @nfTemp = param1
+    elsif param2 == 'acustico'
+      @nfAco = param1
+    end
+    @tinitial = Time.now
+    @timerA = 0
+    @timerT = 0
+    notifyobservers(getTemperature ,getAcoustic ,Time.now.ctime, getGPS[0], getGPS[1])
   end
 end
 

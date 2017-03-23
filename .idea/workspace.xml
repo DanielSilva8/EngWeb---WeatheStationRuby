@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="39639ebf-a172-42be-9266-02a5a8b190ae" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Server/server.rb" afterPath="$PROJECT_DIR$/Server/server.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/XDK/xdk.rb" afterPath="$PROJECT_DIR$/XDK/xdk.rb" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -17,7 +16,7 @@
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/EngWeb---WeatheStationRuby@IRB_console__EngWeb.coverage" NAME="IRB console: EngWeb Coverage Results" MODIFIED="1488471712814" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="EngWeb" />
     <SUITE FILE_PATH="coverage/EngWeb---WeatheStationRuby@server.coverage" NAME="server Coverage Results" MODIFIED="1488777628457" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Server" MODULE_NAME="EngWeb" />
-    <SUITE FILE_PATH="coverage/trabalho-pratico1-EW@xdk.coverage" NAME="xdk Coverage Results" MODIFIED="1490223219831" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/XDK" MODULE_NAME="EngWeb" />
+    <SUITE FILE_PATH="coverage/trabalho-pratico1-EW@xdk.coverage" NAME="xdk Coverage Results" MODIFIED="1490276216772" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/XDK" MODULE_NAME="EngWeb" />
     <SUITE FILE_PATH="coverage/trabalho-pratico1-EW@server.coverage" NAME="server Coverage Results" MODIFIED="1490200038771" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Server" MODULE_NAME="EngWeb" />
     <SUITE FILE_PATH="coverage/EngWeb---WeatheStationRuby@xdk.coverage" NAME="xdk Coverage Results" MODIFIED="1488776939179" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/XDK" MODULE_NAME="EngWeb" />
   </component>
@@ -38,8 +37,8 @@
       <file leaf-file-name="xdk.rb" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/XDK/xdk.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="311">
-              <caret line="154" column="0" lean-forward="true" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
+            <state relative-caret-position="294">
+              <caret line="170" column="0" lean-forward="true" selection-start-line="170" selection-start-column="0" selection-end-line="170" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -846,7 +845,7 @@
       <workItem from="1488584443765" duration="53766000" />
       <workItem from="1488774282849" duration="4393000" />
       <workItem from="1490051157251" duration="2897000" />
-      <workItem from="1490193241015" duration="22301000" />
+      <workItem from="1490193241015" duration="26029000" />
     </task>
     <task id="LOCAL-00001" summary="XDK - Server Communication">
       <created>1488417532194</created>
@@ -883,11 +882,18 @@
       <option name="project" value="LOCAL" />
       <updated>1490057307027</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Final commit">
+      <created>1490226526656</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1490226526656</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="156015000" />
+    <option name="totallyTimeSpent" value="159743000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -1276,8 +1282,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/XDK/xdk.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="311">
-          <caret line="154" column="0" lean-forward="true" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
+        <state relative-caret-position="294">
+          <caret line="170" column="0" lean-forward="true" selection-start-line="170" selection-start-column="0" selection-end-line="170" selection-end-column="0" />
           <folding />
         </state>
       </provider>
